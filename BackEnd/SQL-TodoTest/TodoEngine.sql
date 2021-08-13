@@ -10,27 +10,35 @@ AS
   IF (@mode = 'CREATE')
     BEGIN
       -- insert a new todo
-      SELECT * FROM Todos
+      INSERT into Todos (task, isComplete, owner)
+      values (@task, 0, @userId)
+
+     
     END
 -- READ
   IF (@mode = 'READ')
    BEGIN
       -- select all the correct todos
-    SELECT * FROM Todos where owner=@userId
+    SELECT * FROM Todos 
+    join Users
+    on Users.parent=Todos.owner
+    where Todos.owner=@userId
+    
   END
   
 -- UPDATE 
   IF (@mode = 'UPDATE')
    BEGIN
-      -- update a todo
-      SELECT * FROM Todos
+      update Todos
+      set isComplete = @complete
+      where owner = @userId and taskId = @taskId
    END
    
 -- DELETE
   IF (@mode = 'DELETE')
     BEGIN
       -- delete a todo, DO NOT REMOVE IT FROM THE DATABASE
-      SELECT * FROM Todos
+      DELETE from Todos where owner = @userId and taskId = @taskId
     END
 DONE:
 
@@ -51,3 +59,5 @@ EXEC TodoEngine @userId='3'
 -- mode = DELETE
 -- delete a todo, it still needs to be in the db, but is is not returned in the READ mode.
 -- EXEC TodoEngine @mode='DELETE', @userId='1', @taskId='1'
+
+

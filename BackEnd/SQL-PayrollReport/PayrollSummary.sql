@@ -5,9 +5,15 @@ Payroll (EmployeeId INT, Paycode VARCHAR(100), Hours DECIMAL(12, 4), Rate DECIMA
 Employees (Employee VARCHAR(100), EmployeeId INT)
 */
 
-CREATE PROC PayrollSummary
+CREATE PROCEDURE PayrollSummary
 AS
+SELECT Employee = ISNULL( Employee, 'Total'), Paycode, SUM(Hours * Rate + FlatAmount) as Total from Payroll
+inner join Employees
+on Employees.EmployeeId = Payroll.EmployeeId
+group by rollup (employee)
 
 GO
+
+
 
 EXEC PayrollSummary
