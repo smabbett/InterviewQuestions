@@ -7,13 +7,16 @@ Employees (Employee VARCHAR(100), EmployeeId INT)
 
 CREATE PROCEDURE PayrollSummary
 AS
-SELECT Employee = ISNULL( Employee, 'Total'), Paycode, SUM(Hours * Rate + FlatAmount) as Total from Payroll
-inner join Employees
-on Employees.EmployeeId = Payroll.EmployeeId
-group by rollup (employee)
+SELECT Employee, Paycode, sum(p.Hours * p.Rate + p.FlatAmount) as Total from Payroll as p
+inner join Employees as e
+on e.EmployeeId = p.EmployeeId
+
+group by e.Employee,p.Paycode
+
+-- group by rollup (employee)
 
 GO
 
 
 
-EXEC PayrollSummary
+-- EXEC PayrollSummary

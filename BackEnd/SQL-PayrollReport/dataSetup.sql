@@ -1,5 +1,15 @@
-CREATE TABLE Payroll (EmployeeId INT, Paycode VARCHAR(100), Hours DECIMAL(12, 4), Rate DECIMAL(12, 4), FlatAmount DECIMAL(12, 4))
-CREATE TABLE Employees (EmployeeId INT, Employee VARCHAR(100))
+
+CREATE TABLE Employees (EmployeeId INT NOT NULL PRIMARY KEY, Employee VARCHAR(100), )
+CREATE TABLE Payroll (EmployeeId INT foreign key references Employees(EmployeeId), Paycode VARCHAR(100), Hours DECIMAL(12, 4), Rate DECIMAL(12, 4), FlatAmount DECIMAL(12, 4))
+
+INSERT INTO Employees
+    (EmployeeId, Employee)
+VALUES
+    (001, 'John Doe'),
+    (002, 'Jane Schmidt'),
+    (003, 'Matt Smith'),
+    (004, 'Chase Jones'),
+    (005, 'David Evans')
 
 INSERT INTO Payroll
     (EmployeeId, Paycode, Hours, Rate, FlatAmount)
@@ -25,11 +35,3 @@ VALUES
     (001, 'Regular', 9.50, 15.21, 0.00),
     (002, 'Regular', 7.00, 15.00, 0.00)
 
-INSERT INTO Employees
-    (EmployeeId, Employee)
-VALUES
-    (001, 'John Doe'),
-    (002, 'Jane Schmidt'),
-    (003, 'Matt Smith'),
-    (004, 'Chase Jones'),
-    (005, 'David Evans')

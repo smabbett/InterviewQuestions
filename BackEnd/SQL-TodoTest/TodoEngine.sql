@@ -1,3 +1,13 @@
+IF EXISTS (
+    SELECT *
+    FROM INFORMATION_SCHEMA.ROUTINES
+    WHERE ROUTINE_NAME = 'TodoEngine'
+)
+BEGIN
+    DROP PROCEDURE TodoEngine
+END
+GO
+
 
 -- STORED PROCEDURE TO WORKING WITH TODOS
 CREATE PROCEDURE TodoEngine
@@ -25,12 +35,13 @@ AS
     SELECT * FROM Todos    
 	join Users
     on Users.id = Todos.owner
-	WHERE Users.parent = @userId or Todos.owner = @userId
+	WHERE (Users.parent = @userId or Todos.owner = @userId) AND Todos.isComplete is not null  
     ORDER BY Todos.owner
     
   END
   
 -- UPDATE 
+-- There isn't a taskId in the dataSetup, so I wasn't sure if I should change the dataSetup or just use @task
   IF (@mode = 'UPDATE')
    BEGIN
       update Todos
@@ -42,7 +53,11 @@ AS
   IF (@mode = 'DELETE')
     BEGIN
       -- delete a todo, DO NOT REMOVE IT FROM THE DATABASE
-      DELETE from Todos where owner = @userId and task = @task
+	  -- I'm not sure this is the solution, but it keeps it in the database
+	  -- also wasn't sure I should change dataSetup to add taskId
+	   update Todos
+      set isComplete = NULL
+      where Todos.owner = @userId and Todos.task = @task
     END
 DONE:
 
@@ -62,10 +77,11 @@ DONE:
 
 -- mode = UPDATE
 -- mark a todo complete
--- EXEC TodoEngine @mode='UPDATE', @userId='1', @taskId='1', @compete='1'
+-- EXEC TodoEngine @mode='UPDATE', @userId='1', @taskId='1', @complete='1'
 
 -- mode = DELETE
 -- delete a todo, it still needs to be in the db, but is is not returned in the READ mode.
 -- EXEC TodoEngine @mode='DELETE', @userId='1', @taskId='1'
+
 
 
