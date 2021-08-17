@@ -5,13 +5,24 @@ Payroll (EmployeeId INT, Paycode VARCHAR(100), Hours DECIMAL(12, 4), Rate DECIMA
 Employees (Employee VARCHAR(100), EmployeeId INT)
 */
 
+IF EXISTS (
+    SELECT *
+    FROM INFORMATION_SCHEMA.ROUTINES
+    WHERE ROUTINE_NAME = 'PayrollSummary'
+)
+BEGIN
+    DROP PROCEDURE PayrollSummary
+END
+GO
 CREATE PROCEDURE PayrollSummary
 AS
-SELECT Employee, Paycode, sum(p.Hours * p.Rate + p.FlatAmount) as Total from Payroll as p
-inner join Employees as e
+--doubles the amount for each row
+SELECT Employee, Paycode, sum(p.Hours * p.Rate + p.FlatAmount) as Total 
+from Payroll as p
+join Employees as e
 on e.EmployeeId = p.EmployeeId
-
-group by e.Employee,p.Paycode
+group by e.Employee, p.Paycode
+order by e.Employee
 
 -- group by rollup (employee)
 
